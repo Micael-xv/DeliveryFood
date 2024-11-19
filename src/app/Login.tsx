@@ -7,8 +7,6 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    console.log('Dados enviados:', { email, password });
-
     axios.post('http://192.168.3.5:3333/users/login', {
       email: email,
       password: password,

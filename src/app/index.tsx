@@ -5,6 +5,7 @@ import { Search } from "../components/search";
 import { TrendingFoods } from "../components/trending";
 import Constants from "expo-constants";
 import { Section } from "../components/section";
+export * from '../api/cupoms';
 
 const statusBarHeight = Constants.statusBarHeight;
 export default function Index() {

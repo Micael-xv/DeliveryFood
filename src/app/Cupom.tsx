@@ -23,7 +23,7 @@ export default function CupomCrud() {
 
   const fetchCupoms = async () => {
     try {
-      const response = await axios.get('http://192.168.3.5:3333/cupoms');
+      const response = await axios.get('http://192.168.68.113:3333/cupoms');
       setCupoms(response.data);
     } catch (error) {
       console.error('Erro ao buscar cupons:', error);
@@ -33,14 +33,14 @@ export default function CupomCrud() {
   const handleCreateOrUpdate = async () => {
     try {
       if (editingCupom) {
-        await axios.put(`http://192.168.3.5:3333/cupoms/${editingCupom.id}`, {
+        await axios.put(`http://192.168.68.113:3333/cupoms/${editingCupom.id}`, {
           code,
           discount: Number(discount),
           expirationDate,
         });
         Alert.alert('Sucesso', 'Cupom atualizado com sucesso!');
       } else {
-        await axios.post('http://192.168.3.5:3333/cupoms', {
+        await axios.post('http://192.168.68.113:3333/cupoms', {
           code,
           discount: Number(discount),
           expirationDate,
@@ -67,7 +67,7 @@ export default function CupomCrud() {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://192.168.3.5:3333/cupoms/${id}`);
+      await axios.delete(`http://192.168.68.113:3333/cupoms/${id}`);
       Alert.alert('Sucesso', 'Cupom deletado com sucesso!');
       fetchCupoms();
     } catch (error) {

@@ -2,7 +2,7 @@ import { Text, View, ScrollView } from "react-native";
 import { Header } from "../components/header";
 import { Banner } from "./../components/banner/index";
 import { Search } from "../components/search";
-import { TredingFoods } from "../components/trending";
+import { TrendingFoods } from "../components/trending";
 import Constants from "expo-constants";
 import { Section } from "../components/section";
 
@@ -29,7 +29,7 @@ export default function Index() {
         size="text-2xl"
       />
 
-      <TredingFoods/>
+      <TrendingFoods/>
 
     </ScrollView>
   );

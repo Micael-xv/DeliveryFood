@@ -10,13 +10,13 @@ export interface FoodProps {
   image: string;
   description: string;
 }
-export function TredingFoods() {
+export function TrendingFoods() {
 
   const [foods, setFoods] = useState<FoodProps[]>([]);
 
   useEffect(() => {
     async function getFoods() {
-      const response = await axios.get("http://192.168.3.5:3333/products")
+      const response = await axios.get("http://192.168.68.113:3333/products")
       setFoods(response.data.data);
       console.log(response.data);
     } 

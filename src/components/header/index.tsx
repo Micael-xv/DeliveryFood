@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Pressable, Text, Modal, TouchableOpacity } from "react-native";
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from './App';
+import { RootStackParamList } from '../../app/App';
 
 export function Header() {
   const [modalVisible, setModalVisible] = useState(false);

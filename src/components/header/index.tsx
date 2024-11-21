@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { View, Pressable, Text, Modal, TouchableOpacity } from "react-native";
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../../app/App'; // Certifique-se de que o caminho está correto
 
 export function Header() {
   const [modalVisible, setModalVisible] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <View className="w-full flex flex-row items-center justify-between">
@@ -38,10 +39,10 @@ export function Header() {
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <View style={{ width: 300, backgroundColor: 'white', borderRadius: 10, padding: 20 }}>
             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Menu</Text>
-            <TouchableOpacity onPress={() => { setModalVisible(false);}}>
+            <TouchableOpacity onPress={() => { setModalVisible(false); }}>
               <Text style={{ fontSize: 16, marginBottom: 10 }}>CRUD de Produtos</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => { setModalVisible(false);}}>
+            <TouchableOpacity onPress={() => { setModalVisible(false); navigation.navigate('Cupom'); }}>
               <Text style={{ fontSize: 16, marginBottom: 10 }}>CRUD de Cupons</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { setModalVisible(false); navigation.navigate('Login'); }}>

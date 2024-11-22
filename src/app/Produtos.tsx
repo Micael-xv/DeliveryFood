@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, Modal, StyleSheet } from 'react-native';
 import axios from 'axios';
+import { Picker } from '@react-native-picker/picker';
 
 interface Product {
   id: number;
@@ -8,12 +9,17 @@ interface Product {
   price: string;
   description: string;
   image: string;
-  idCategory: number;
+  idCategory: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
 }
 
 export default function ProdutosScreen() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
 
@@ -25,7 +31,8 @@ export default function ProdutosScreen() {
   const fetchProducts = async () => {
     try {
       const response = await axios.get('http://192.168.3.5:3333/products');
-      setProducts(response.data);
+      console.log('Produtos buscados:', response.data);
+      setProducts(response.data.data); // Acessa o array de produtos dentro do objeto de resposta
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);
       Alert.alert('Erro', 'Erro ao buscar produtos. Por favor, tente novamente mais tarde.');
@@ -35,7 +42,8 @@ export default function ProdutosScreen() {
   const fetchCategories = async () => {
     try {
       const response = await axios.get('http://192.168.3.5:3333/categories');
-      setCategories(response.data);
+      console.log('Categorias buscadas:', response.data);
+      setCategories(response.data.data); // Acessa o array de categorias dentro do objeto de resposta
     } catch (error) {
       console.error('Erro ao buscar categorias:', error);
       Alert.alert('Erro', 'Erro ao buscar categorias. Por favor, tente novamente mais tarde.');
@@ -49,13 +57,29 @@ export default function ProdutosScreen() {
         return;
       }
 
+      const token = localStorage.getItem('token');
       let response;
       if (currentProduct.id) {
-        response = await axios.post(`http://192.168.3.5:3333/products/persist/${currentProduct.id}`, currentProduct);
-        Alert.alert('Sucesso', 'Produto editado com sucesso.');
+        console.log('Editando produto:', currentProduct);
+        response = await axios.post(`http://192.168.3.5:3333/products/persist/${currentProduct.id}`, currentProduct, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } else {
-        response = await axios.post('http://192.168.3.5:3333/products/persist', currentProduct);
-        Alert.alert('Sucesso', 'Produto criado com sucesso.');
+        console.log('Criando produto:', currentProduct);
+        response = await axios.post('http://192.168.3.5:3333/products/persist', currentProduct, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
+      console.log('Resposta da API:', response.data);
+      if (response.data.success) {
+        Alert.alert('Sucesso', currentProduct.id ? 'Produto editado com sucesso.' : 'Produto criado com sucesso.');
+      } else {
+        Alert.alert('Erro', 'Erro ao salvar produto. Por favor, tente novamente mais tarde.');
       }
 
       setDialogVisible(false);
@@ -69,8 +93,13 @@ export default function ProdutosScreen() {
 
   const handleDelete = async (product: Product) => {
     try {
+      const token = localStorage.getItem('token');
       if (confirm(`Deseja deletar o registro com id ${product.id}`)) {
-        await axios.post('http://192.168.3.5:3333/products/destroy', { id: product.id });
+        await axios.post('http://192.168.3.5:3333/products/destroy', { id: product.id }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         Alert.alert('Sucesso', 'Produto excluído com sucesso.');
         fetchProducts();
       }
@@ -86,7 +115,7 @@ export default function ProdutosScreen() {
   };
 
   const handleCreate = () => {
-    setCurrentProduct({ id: 0, name: '', price: '', description: '', image: '', idCategory: 0 });
+    setCurrentProduct({ id: 0, name: '', price: '', description: '', image: '', idCategory: '' });
     setDialogVisible(true);
   };
 
@@ -96,19 +125,28 @@ export default function ProdutosScreen() {
         data={products}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Text style={styles.itemTitle}>{item.name}</Text>
-            <Text>{item.price}</Text>
-            <Text>{item.description}</Text>
-            <Text>{item.idCategory}</Text>
-            <View style={styles.itemActions}>
-              <TouchableOpacity onPress={() => handleEdit(item)} style={styles.editButton}>
-                <Text style={styles.editButtonText}>Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDelete(item)} style={styles.deleteButton}>
-                <Text style={styles.deleteButtonText}>Excluir</Text>
-              </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleEdit(item)} style={styles.itemContainer}>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCell}>{item.name}</Text>
+              <Text style={styles.tableCell}>{item.price}</Text>
+              <Text style={styles.tableCell}>{item.description}</Text>
+              <View style={styles.tableCellActions}>
+                <TouchableOpacity onPress={() => handleEdit(item)} style={styles.editButton}>
+                  <Text style={styles.editButtonText}>Editar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDelete(item)} style={styles.deleteButton}>
+                  <Text style={styles.deleteButtonText}>Excluir</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+          </TouchableOpacity>
+        )}
+        ListHeaderComponent={() => (
+          <View style={styles.tableHeader}>
+            <Text style={styles.tableHeaderCell}>Nome</Text>
+            <Text style={styles.tableHeaderCell}>Preço</Text>
+            <Text style={styles.tableHeaderCell}>Descrição</Text>
+            <Text style={styles.tableHeaderCell}>Ações</Text>
           </View>
         )}
       />
@@ -144,12 +182,15 @@ export default function ProdutosScreen() {
               value={currentProduct?.image}
               onChangeText={(text) => setCurrentProduct({ ...currentProduct, image: text })}
             />
-            <TextInput
+            <Picker
+              selectedValue={currentProduct?.idCategory}
               style={styles.input}
-              placeholder="Categoria"
-              value={currentProduct?.idCategory.toString()}
-              onChangeText={(text) => setCurrentProduct({ ...currentProduct, idCategory: parseInt(text) })}
-            />
+              onValueChange={(itemValue) => setCurrentProduct({ ...currentProduct, idCategory: itemValue })}
+            >
+              {categories.map((category) => (
+                <Picker.Item key={category.id} label={category.name} value={category.id} />
+              ))}
+            </Picker>
             <View style={styles.modalActions}>
               <TouchableOpacity onPress={() => setDialogVisible(false)} style={styles.cancelButton}>
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
@@ -171,6 +212,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
     backgroundColor: '#f5f5f5',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 8,
+    backgroundColor: '#ddd',
+  },
+  tableHeaderCell: {
+    flex: 1,
+    fontWeight: 'bold',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  tableCell: {
+    flex: 1,
+  },
+  tableCellActions: {
+    flexDirection: 'row',
   },
   itemContainer: {
     padding: 16,
@@ -232,7 +296,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    height: 40,
+    height: 59,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 4,
@@ -247,7 +311,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     marginRight: 8,
     padding: 8,
-    backgroundColor: '#ccc',
+    backgroundColor: '#FF0000',
     borderRadius: 4,
   },
   cancelButtonText: {

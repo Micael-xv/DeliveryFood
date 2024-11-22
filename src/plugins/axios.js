@@ -13,9 +13,6 @@ export default defineNuxtPlugin(() => {
   });
 
   api.interceptors.response.use(function (response) {
-    if (process.client) {
-    // console.log(window.localStorage.getItem('token'));
-    }
     return response.data;
   }, function (error) {
     return Promise.reject(error);
@@ -27,10 +24,6 @@ export default defineNuxtPlugin(() => {
     }
     return teste
   })
-
-  // api.interceptors.request.use((_) => {
-  //   console.log(window.localStorage.getItem('token'));
-  // })
 
   return {
     provide: {

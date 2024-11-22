@@ -32,7 +32,7 @@ export default function ProdutosScreen() {
     try {
       const response = await axios.get('http://192.168.3.5:3333/products');
       console.log('Produtos buscados:', response.data);
-      setProducts(response.data.data); // Acessa o array de produtos dentro do objeto de resposta
+      setProducts(response.data.data);
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);
       Alert.alert('Erro', 'Erro ao buscar produtos. Por favor, tente novamente mais tarde.');
@@ -43,7 +43,7 @@ export default function ProdutosScreen() {
     try {
       const response = await axios.get('http://192.168.3.5:3333/categories');
       console.log('Categorias buscadas:', response.data);
-      setCategories(response.data.data); // Acessa o array de categorias dentro do objeto de resposta
+      setCategories(response.data.data);
     } catch (error) {
       console.error('Erro ao buscar categorias:', error);
       Alert.alert('Erro', 'Erro ao buscar categorias. Por favor, tente novamente mais tarde.');
@@ -57,29 +57,20 @@ export default function ProdutosScreen() {
         return;
       }
 
-      const token = localStorage.getItem('token');
       let response;
       if (currentProduct.id) {
         console.log('Editando produto:', currentProduct);
-        response = await axios.post(`http://192.168.3.5:3333/products/persist/${currentProduct.id}`, currentProduct, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        response = await axios.post(`http://192.168.3.5:3333/products/persist/${currentProduct.id}`, currentProduct);
       } else {
         console.log('Criando produto:', currentProduct);
-        response = await axios.post('http://192.168.3.5:3333/products/persist', currentProduct, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        response = await axios.post('http://192.168.3.5:3333/products/persist', currentProduct);
       }
 
       console.log('Resposta da API:', response.data);
       if (response.data.success) {
         Alert.alert('Sucesso', currentProduct.id ? 'Produto editado com sucesso.' : 'Produto criado com sucesso.');
       } else {
-        Alert.alert('Erro', 'Erro ao salvar produto. Por favor, tente novamente mais tarde.');
+        Alert.alert( response.data.message || 'Erro ao salvar produto. Por favor, tente novamente mais tarde.');
       }
 
       setDialogVisible(false);
@@ -92,21 +83,34 @@ export default function ProdutosScreen() {
   };
 
   const handleDelete = async (product: Product) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (confirm(`Deseja deletar o registro com id ${product.id}`)) {
-        await axios.post('http://192.168.3.5:3333/products/destroy', { id: product.id }, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    Alert.alert(
+      'Confirmação',
+      `Deseja deletar o registro com id ${product.id}?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              const response = await axios.post('http://192.168.3.5:3333/products/destroy', { id: product.id });
+              if (response.data.success) {
+                Alert.alert('Sucesso', 'Produto excluído com sucesso.');
+                fetchProducts();
+              } else {
+                Alert.alert( response.data.message || 'Erro ao excluir produto. Por favor, tente novamente mais tarde.');
+              }
+            } catch (error) {
+              console.error('Erro ao excluir produto:', error);
+              Alert.alert('Erro', 'Erro ao excluir produto. Por favor, tente novamente mais tarde.');
+            }
           },
-        });
-        Alert.alert('Sucesso', 'Produto excluído com sucesso.');
-        fetchProducts();
-      }
-    } catch (error) {
-      console.error('Erro ao excluir produto:', error);
-      Alert.alert('Erro', 'Erro ao excluir produto. Por favor, tente novamente mais tarde.');
-    }
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleEdit = (product: Product) => {
@@ -296,7 +300,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    height: 59,
+    height: 60,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 4,

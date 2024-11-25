@@ -17,7 +17,7 @@ export function Cupons() {
 
   useEffect(() => {
     async function getFoods() {
-      const response = await axios.get("http://192.168.3.5:3333/cupoms")
+      const response = await axios.get("http://192.168.68.113:3333/cupoms")
       setCupons(response.data.data);
       console.log(response.data);
     } 

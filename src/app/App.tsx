@@ -6,6 +6,11 @@ import Index from './index';
 import LoginScreen from './Login';
 import CupomCrud from './Cupom';
 import ProdutosScreen from './Produtos';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+  'VirtualizedLists should never be nested inside plain ScrollViews'
+]);
 
 export type RootStackParamList = {
   Home: undefined;

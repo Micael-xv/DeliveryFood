@@ -5,7 +5,7 @@ import { Search } from "../components/search";
 import { TrendingFoods } from "../components/trending";
 import Constants from "expo-constants";
 import { Section } from "../components/section";
-export * from '../api/cupoms';
+
 
 const statusBarHeight = Constants.statusBarHeight;
 export default function Index() {
@@ -13,7 +13,7 @@ export default function Index() {
     <ScrollView
       style={{ flex: 1 }}
       className="bg-slate-200"
-      showsVerticalScrollIndicator={false}
+      showsVerticalScrollIndicator={true}
     >
       <View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
         <Header />
@@ -24,7 +24,7 @@ export default function Index() {
       </View>
 
       <Section
-        name="Comidas em alta"
+        name="Produtos"
         label="Veja mais"
         action={() => console.log("Clicou em ver mais")}
         size="text-2xl"

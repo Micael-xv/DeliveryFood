@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { View, Pressable, Text, Modal, TouchableOpacity } from "react-native";
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { View, Pressable, Text, Modal, TouchableOpacity, Image } from "react-native";
+import { Ionicons,  Feather } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../app/App';
 
@@ -9,25 +9,31 @@ export function Header() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Pressable
-        style={{ width: 40, height: 40, backgroundColor: 'white', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}
-        onPress={() => setModalVisible(true)}
-      >
-        <Ionicons name="menu" size={20} color="#121212" />
-      </Pressable>
+    <View style={{ flex: 1 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 }}>
+        <Pressable style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
+          <Image
+              source={require("../../assets/logo-mercado.png")}
+              style={{ width: '90%', height: '90%', borderRadius: 20 }}
+          />
+        </Pressable>
 
-      <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-        <Text style={{ textAlign: 'center', fontSize: 14, color: '#4A5568' }}>Localização</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Feather name="map-pin" size={14} color={"#FF0000"} />
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Chapecó</Text>
+        <View className="flex flex-col items-center justify-center">
+            <Text className="text-center text-sm text-slate-800">Localização</Text>
+
+            <View className="flex flex-row items-center justify-center gap-1">
+                <Feather name="map-pin" size={14} color="#FF0000" />
+                <Text className="text-lg font-bold">Chapecó</Text>
+            </View>
         </View>
-      </View>
 
-      <Pressable style={{ width: 40, height: 40, backgroundColor: 'white', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
-        <Feather name="bell" size={20} color="#121212" />
-      </Pressable>
+        <Pressable
+          style={{ width: 40, height: 40, backgroundColor: 'white', borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}
+          onPress={() => setModalVisible(true)}
+        >
+          <Ionicons name="menu" size={20} color="#121212" />
+        </Pressable>
+      </View>
 
       <Modal
         animationType="slide"

@@ -16,7 +16,7 @@ export function TrendingFoods() {
 
   useEffect(() => {
     async function getFoods() {
-      const response = await axios.get("http://192.168.3.5:3333/products")
+      const response = await axios.get("http://192.168.68.113:3333/products")
       setFoods(response.data.data);
       console.log(response.data);
     } 
@@ -27,7 +27,7 @@ export function TrendingFoods() {
     <FlatList
       data={foods}
       renderItem={ ({item}) => <CardHorizontalFood food={item}/> }
-      contentContainerStyle= {{ gap: 14, paddingLeft: 16, paddingRight: 16}}
+      contentContainerStyle= {{ gap: 20, paddingLeft: 16, paddingRight: 16}}
       showsHorizontalScrollIndicator={false}
     />
   );

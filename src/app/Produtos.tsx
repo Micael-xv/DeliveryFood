@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, Modal, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, Modal, StyleSheet, SafeAreaView } from 'react-native';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 
@@ -17,11 +17,14 @@ interface Category {
   name: string;
 }
 
+// Define PartialProduct with all properties optional
+type PartialProduct = Partial<Product> & { id?: number };
+
 export default function ProdutosScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
+  const [currentProduct, setCurrentProduct] = useState<PartialProduct | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -30,7 +33,7 @@ export default function ProdutosScreen() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://192.168.3.5:3333/products');
+      const response = await axios.get('http://192.168.68.113:3333/products');
       console.log('Produtos buscados:', response.data);
       setProducts(response.data.data);
     } catch (error) {
@@ -41,7 +44,7 @@ export default function ProdutosScreen() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://192.168.3.5:3333/categories');
+      const response = await axios.get('http://192.168.68.113:3333/categories');
       console.log('Categorias buscadas:', response.data);
       setCategories(response.data.data);
     } catch (error) {
@@ -60,10 +63,10 @@ export default function ProdutosScreen() {
       let response;
       if (currentProduct.id) {
         console.log('Editando produto:', currentProduct);
-        response = await axios.post(`http://192.168.3.5:3333/products/persist/${currentProduct.id}`, currentProduct);
+        response = await axios.post(`http://192.168.68.113:3333/products/persist/${currentProduct.id}`, currentProduct);
       } else {
         console.log('Criando produto:', currentProduct);
-        response = await axios.post('http://192.168.3.5:3333/products/persist', currentProduct);
+        response = await axios.post('http://192.168.68.113:3333/products/persist', currentProduct);
       }
 
       console.log('Resposta da API:', response.data);
@@ -95,7 +98,7 @@ export default function ProdutosScreen() {
           text: 'OK',
           onPress: async () => {
             try {
-              const response = await axios.post('http://192.168.3.5:3333/products/destroy', { id: product.id });
+              const response = await axios.post('http://192.168.68.113:3333/products/destroy', { id: product.id });
               if (response.data.success) {
                 Alert.alert('Sucesso', 'Produto excluído com sucesso.');
                 fetchProducts();
@@ -125,35 +128,37 @@ export default function ProdutosScreen() {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleEdit(item)} style={styles.itemContainer}>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>{item.name}</Text>
-              <Text style={styles.tableCell}>{item.price}</Text>
-              <Text style={styles.tableCell}>{item.description}</Text>
-              <View style={styles.tableCellActions}>
-                <TouchableOpacity onPress={() => handleEdit(item)} style={styles.editButton}>
-                  <Text style={styles.editButtonText}>Editar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDelete(item)} style={styles.deleteButton}>
-                  <Text style={styles.deleteButtonText}>Excluir</Text>
-                </TouchableOpacity>
+      <SafeAreaView style={{flex: 1}}>
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleEdit(item)} style={styles.container}>
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCell}>{item.name}</Text>
+                <Text style={styles.tableCell}>{item.price}</Text>
+                <Text style={styles.tableCell}>{item.description}</Text>
+                <View style={styles.tableCellActions}>
+                  <TouchableOpacity onPress={() => handleEdit(item)} style={styles.editButton}>
+                    <Text style={styles.editButtonText}>Editar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete(item)} style={styles.deleteButton}>
+                    <Text style={styles.deleteButtonText}>Excluir</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+            </TouchableOpacity>
+          )}
+          ListHeaderComponent={() => (
+            <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderCell}>Nome</Text>
+              <Text style={styles.tableHeaderCell}>Preço</Text>
+              <Text style={styles.tableHeaderCell}>Descrição</Text>
+              <Text style={styles.tableHeaderCell}>Ações</Text>
             </View>
-          </TouchableOpacity>
-        )}
-        ListHeaderComponent={() => (
-          <View style={styles.tableHeader}>
-            <Text style={styles.tableHeaderCell}>Nome</Text>
-            <Text style={styles.tableHeaderCell}>Preço</Text>
-            <Text style={styles.tableHeaderCell}>Descrição</Text>
-            <Text style={styles.tableHeaderCell}>Ações</Text>
-          </View>
-        )}
-      />
+          )}
+        />
+      </SafeAreaView>
       <TouchableOpacity onPress={handleCreate} style={styles.addButton}>
         <Text style={styles.addButtonText}>Adicionar Produto</Text>
       </TouchableOpacity>
@@ -232,7 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#ddd',
   },
   tableCell: {
     flex: 1,
@@ -240,58 +245,46 @@ const styles = StyleSheet.create({
   tableCellActions: {
     flexDirection: 'row',
   },
-  itemContainer: {
-    padding: 16,
-    marginBottom: 8,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  itemTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  itemActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 8,
-  },
   editButton: {
     marginRight: 8,
+    padding: 8,
+    backgroundColor: '#4CAF50',
+    borderRadius: 4,
   },
   editButtonText: {
-    color: '#007BFF',
+    color: '#fff',
+    fontWeight: 'bold',
   },
-  deleteButton: {},
+  deleteButton: {
+    padding: 8,
+    backgroundColor: '#F44336',
+    borderRadius: 4,
+  },
   deleteButtonText: {
-    color: '#FF0000',
+    color: '#fff',
+    fontWeight: 'bold',
   },
   addButton: {
-    marginTop: 16,
     padding: 16,
-    backgroundColor: '#007BFF',
-    borderRadius: 8,
+    backgroundColor: '#2196F3',
+    borderRadius: 4,
     alignItems: 'center',
   },
   addButtonText: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: 'bold',
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: '90%',
-    padding: 16,
+    width: '80%',
     backgroundColor: '#fff',
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 4,
   },
   modalTitle: {
     fontSize: 18,
@@ -299,34 +292,38 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
-    width: '100%',
-    height: 60,
-    borderColor: '#ccc',
+    height: 40,
+    borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 4,
-    paddingHorizontal: 8,
+    paddingLeft: 8,
     marginBottom: 16,
-    backgroundColor: '#fff',
   },
   modalActions: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
   },
   cancelButton: {
-    marginRight: 8,
     padding: 8,
-    backgroundColor: '#FF0000',
+    backgroundColor: '#F44336',
     borderRadius: 4,
+    flex: 1,
+    alignItems: 'center',
+    marginRight: 8,
   },
   cancelButtonText: {
     color: '#fff',
+    fontWeight: 'bold',
   },
   saveButton: {
     padding: 8,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#4CAF50',
     borderRadius: 4,
+    flex: 1,
+    alignItems: 'center',
   },
   saveButtonText: {
     color: '#fff',
+    fontWeight: 'bold',
   },
 });

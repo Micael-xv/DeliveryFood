@@ -33,7 +33,7 @@ export default function ProdutosScreen() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://192.168.68.113:3333/products');
+      const response = await axios.get('http://192.168.3.5:3333/products');
       console.log('Produtos buscados:', response.data);
       setProducts(response.data.data);
     } catch (error) {
@@ -44,7 +44,7 @@ export default function ProdutosScreen() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://192.168.68.113:3333/categories');
+      const response = await axios.get('http://192.168.3.5:3333/categories');
       console.log('Categorias buscadas:', response.data);
       setCategories(response.data.data);
     } catch (error) {
@@ -63,10 +63,10 @@ export default function ProdutosScreen() {
       let response;
       if (currentProduct.id) {
         console.log('Editando produto:', currentProduct);
-        response = await axios.post(`http://192.168.68.113:3333/products/persist/${currentProduct.id}`, currentProduct);
+        response = await axios.post(`http://192.168.3.5:3333/products/persist/${currentProduct.id}`, currentProduct);
       } else {
         console.log('Criando produto:', currentProduct);
-        response = await axios.post('http://192.168.68.113:3333/products/persist', currentProduct);
+        response = await axios.post('http://192.168.3.5:3333/products/persist', currentProduct);
       }
 
       console.log('Resposta da API:', response.data);
@@ -98,7 +98,7 @@ export default function ProdutosScreen() {
           text: 'OK',
           onPress: async () => {
             try {
-              const response = await axios.post('http://192.168.68.113:3333/products/destroy', { id: product.id });
+              const response = await axios.post('http://192.168.3.5:3333/products/destroy', { id: product.id });
               if (response.data.success) {
                 Alert.alert('Sucesso', 'Produto excluído com sucesso.');
                 fetchProducts();
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
-    height: 40,
+    height: 60,
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 4,

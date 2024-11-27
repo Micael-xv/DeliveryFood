@@ -5,7 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Index from './index';
 import LoginScreen from './Login';
 import CupomCrud from './Cupom';
-import ProdutosScreen from './Produtos';
+import Produtos from './Produtos';
+import Cadastro from './Cadastro';
 import { LogBox } from 'react-native';
 
 LogBox.ignoreLogs([
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   Produtos: undefined;
   Cupom: undefined;
   Login: undefined;
+  Cadastro: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -25,8 +27,9 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Cadastro" component={Cadastro}/>
         <Stack.Screen name="Home" component={Index} />
-        <Stack.Screen name="Produtos" component={ProdutosScreen} />
+        <Stack.Screen name="Produtos" component={Produtos} />
         <Stack.Screen name="Cupom" component={CupomCrud} />
         <Stack.Screen name="Login" component={LoginScreen} />
       </Stack.Navigator>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+  const navigation = useNavigation();
+
   const handleLogin = () => {
     axios.post('http://192.168.3.5:3333/users/login', {
       email: email,
@@ -45,6 +47,9 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Cadastro')}>
+        <Text style={styles.registerButtonText}>Cadastrar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -53,14 +58,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     padding: 16,
     backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 24,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   input: {
     width: '100%',
@@ -73,14 +78,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   button: {
-    width: '100%',
-    height: 40,
+    padding: 16,
     backgroundColor: '#007BFF',
-    justifyContent: 'center',
+    borderRadius: 8,
     alignItems: 'center',
-    borderRadius: 4,
   },
   buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  registerButton: {
+    marginTop: 16,
+    padding: 16,
+    backgroundColor: '#28a745',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  registerButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',

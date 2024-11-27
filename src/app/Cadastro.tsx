@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
 
-export default function CadastroScreen({ navigation }) {
+export default function CadastroScreen({navigation}: {navigation: any}) {
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [cpf, setCpf] = useState('');
@@ -27,7 +27,7 @@ export default function CadastroScreen({ navigation }) {
         password,
       });
 
-      const response = await axios.post('http://192.168.3.5:3333/users/register', {
+      const response = await axios.post('http://192.168.68.113:3333/users/register', {
         username,
         name,
         cpf,
@@ -44,7 +44,7 @@ export default function CadastroScreen({ navigation }) {
       } else {
         Alert.alert('Erro', response.data.message || 'Erro ao cadastrar usuário!');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao cadastrar usuário:', error.response ? error.response.data : error.message);
       Alert.alert('Erro', 'Ocorreu um erro ao tentar fazer cadastro.');
     }

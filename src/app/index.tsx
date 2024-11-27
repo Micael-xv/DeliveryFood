@@ -1,7 +1,6 @@
 import { Text, View, ScrollView } from "react-native";
 import { Header } from "../components/header";
 import { Banner } from "./../components/banner/index";
-import { Search } from "../components/search";
 import { TrendingFoods } from "../components/trending";
 import Constants from "expo-constants";
 import { Section } from "../components/section";
@@ -15,12 +14,10 @@ export default function Index() {
       className="bg-slate-200"
       showsVerticalScrollIndicator={true}
     >
-      <View className="w-full px-4" style={{ marginTop: statusBarHeight + 8 }}>
+      <View className="w-full px-3" style={{ marginTop: statusBarHeight + 8 }}>
         <Header />
 
         <Banner />
-
-        <Search />
       </View>
 
       <Section

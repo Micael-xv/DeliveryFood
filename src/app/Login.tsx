@@ -2,28 +2,37 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    axios.post('http://192.168.3.5:3333/users/login', {
-      email: email,
-      password: password,
-    })
-    .then(response => {
-      if (response.data.success) {
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos!');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://192.168.68.113:3333/users/login', {
+        email: email,
+        password: password,
+      });
+
+      console.log('Resposta da API:', response.data);
+
+      if (response.data.token) {
+        await AsyncStorage.setItem('userToken', response.data.token);
         Alert.alert('Sucesso', 'Login realizado com sucesso!');
       } else {
         Alert.alert('Erro', 'Email ou senha incorretos.');
       }
-    })
-    .catch(error => {
-      console.error('Erro:', error.response ? error.response.data : error.message);
+    } catch (error: any) {
+      console.error('Erro ao fazer login:', error.response ? error.response.data : error.message);
       Alert.alert('Erro', 'Ocorreu um erro ao tentar fazer login.');
-    });
+    }
   };
 
   return (

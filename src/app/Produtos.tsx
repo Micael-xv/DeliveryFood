@@ -33,7 +33,7 @@ export default function ProdutosScreen() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://192.168.3.5:3333/products');
+      const response = await axios.get('http://192.168.68.113:3333/products');
       console.log('Produtos buscados:', response.data);
       setProducts(response.data.data);
     } catch (error) {
@@ -44,7 +44,7 @@ export default function ProdutosScreen() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://192.168.3.5:3333/categories');
+      const response = await axios.get('http://192.168.68.113:3333/categories');
       console.log('Categorias buscadas:', response.data);
       setCategories(response.data.data);
     } catch (error) {
@@ -63,10 +63,10 @@ export default function ProdutosScreen() {
       let response;
       if (currentProduct.id) {
         console.log('Editando produto:', currentProduct);
-        response = await axios.post(`http://192.168.3.5:3333/products/persist/${currentProduct.id}`, currentProduct);
+        response = await axios.post(`http://192.168.68.113:3333/products/persist/${currentProduct.id}`, currentProduct);
       } else {
         console.log('Criando produto:', currentProduct);
-        response = await axios.post('http://192.168.3.5:3333/products/persist', currentProduct);
+        response = await axios.post('http://192.168.68.113:3333/products/persist', currentProduct);
       }
 
       console.log('Resposta da API:', response.data);
@@ -98,7 +98,7 @@ export default function ProdutosScreen() {
           text: 'OK',
           onPress: async () => {
             try {
-              const response = await axios.post('http://192.168.3.5:3333/products/destroy', { id: product.id });
+              const response = await axios.post('http://192.168.68.113:3333/products/destroy', { id: product.id });
               if (response.data.success) {
                 Alert.alert('Sucesso', 'Produto excluído com sucesso.');
                 fetchProducts();
@@ -220,91 +220,116 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f5f5f5', 
   },
   tableHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 8,
-    backgroundColor: '#ddd',
+    backgroundColor: '#f8f8f8', 
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc', 
   },
   tableHeaderCell: {
     flex: 1,
     fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16, 
   },
   tableRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 8,
+    padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+    backgroundColor: '#fff', 
+    borderRadius: 8, 
+    marginBottom: 10, 
   },
   tableCell: {
     flex: 1,
+    textAlign: 'center', 
+    fontSize: 14,
   },
   tableCellActions: {
     flexDirection: 'row',
+    justifyContent: 'center', 
   },
   editButton: {
-    marginRight: 8,
-    padding: 8,
-    backgroundColor: '#4CAF50',
-    borderRadius: 4,
+    marginRight: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#007BFF',
+    borderRadius: 4, 
   },
   editButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 14,
   },
   deleteButton: {
-    padding: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     backgroundColor: '#F44336',
     borderRadius: 4,
   },
   deleteButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 14,
   },
   addButton: {
-    padding: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: '#2196F3',
-    borderRadius: 4,
+    borderRadius: 20,
     alignItems: 'center',
+    marginTop: 20,
   },
   addButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   modalContainer: {
     width: '80%',
     backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 4,
+    padding: 20,
+    borderRadius: 12, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5, 
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 20,
+    textAlign: 'center', 
   },
   input: {
-    height: 60,
+    height: 50,
     borderColor: '#ddd',
     borderWidth: 1,
-    borderRadius: 4,
-    paddingLeft: 8,
+    borderRadius: 8,
+    paddingLeft: 12,
     marginBottom: 16,
+    fontSize: 14,
   },
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   cancelButton: {
-    padding: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: '#F44336',
     borderRadius: 4,
     flex: 1,
@@ -314,16 +339,19 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 14,
   },
   saveButton: {
-    padding: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: '#4CAF50',
-    borderRadius: 4,
+    borderRadius: 20,
     flex: 1,
     alignItems: 'center',
   },
   saveButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 14,
   },
 });

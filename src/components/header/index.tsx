@@ -45,10 +45,10 @@ export function Header() {
           <View style={{ width: 300, backgroundColor: 'white', borderRadius: 10, padding: 20 }}>
             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Menu</Text>
             <TouchableOpacity onPress={() => { setModalVisible(false); navigation.navigate('Produtos'); }}>
-              <Text style={{ fontSize: 16, marginBottom: 10 }}>CRUD de Produtos</Text>
+              <Text style={{ fontSize: 16, marginBottom: 10 }}>Produtos</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { setModalVisible(false); navigation.navigate('Cupom'); }}>
-              <Text style={{ fontSize: 16, marginBottom: 10 }}>CRUD de Cupons</Text>
+              <Text style={{ fontSize: 16, marginBottom: 10 }}>Cupons</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { setModalVisible(false); navigation.navigate('Login'); }}>
               <Text style={{ fontSize: 16, marginBottom: 10 }}>Login</Text>

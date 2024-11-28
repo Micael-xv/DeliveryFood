@@ -16,7 +16,7 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await axios.post('http://192.168.68.113:3333/users/login', {
+      const response = await axios.post('http://192.168.3.5:3333/users/login', {
         email: email,
         password: password,
       });
@@ -26,10 +26,15 @@ export default function LoginScreen() {
       if (response.data.token) {
         await AsyncStorage.setItem('userToken', response.data.token);
         Alert.alert('Sucesso', 'Login realizado com sucesso!');
+        
+        const token = await AsyncStorage.getItem('userToken');
+        if (token) {
+          navigation.replace('Home');
+        }
       } else {
         Alert.alert('Erro', 'Email ou senha incorretos.');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao fazer login:', error.response ? error.response.data : error.message);
       Alert.alert('Erro', 'Ocorreu um erro ao tentar fazer login.');
     }
@@ -37,6 +42,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Seja Bem-vindo a loja</Text>
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}

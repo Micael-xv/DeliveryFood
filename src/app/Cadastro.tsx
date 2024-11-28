@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 export default function CadastroScreen({navigation}: {navigation: any}) {
   const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ export default function CadastroScreen({navigation}: {navigation: any}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [terms, setTerms] = useState(false);
-
+  const nave = useNavigation();
   const handleCadastro = async () => {
     if (!username || !name || !cpf || !phone || !email || !password || !terms) {
       Alert.alert('Erro', 'Preencha todos os campos e concorde com os termos!');
@@ -27,7 +28,7 @@ export default function CadastroScreen({navigation}: {navigation: any}) {
         password,
       });
 
-      const response = await axios.post('http://192.168.68.113:3333/users/register', {
+      const response = await axios.post('http://192.168.3.5:3333/users/register', {
         username,
         name,
         cpf,
@@ -101,7 +102,7 @@ export default function CadastroScreen({navigation}: {navigation: any}) {
         <Text style={styles.checkboxLabel}>Eu concordo com os termos e condições</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Login')}>
+        <TouchableOpacity style={styles.backButton} onPress={() => nave.navigate('Login')}>
           <Text style={styles.buttonText}>Voltar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.submitButton, !terms && styles.disabledButton]} onPress={handleCadastro} disabled={!terms}>
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 16,
-    backgroundColor: '#ccc',
+    backgroundColor: '#1565C0',
     borderRadius: 8,
     alignItems: 'center',
     flex: 1,
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     padding: 16,
-    backgroundColor: '#007BFF',
+    backgroundColor: 'green',
     borderRadius: 8,
     alignItems: 'center',
     flex: 1,

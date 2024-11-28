@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, Modal, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, Modal, StyleSheet, SafeAreaView, Image } from 'react-native';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 
@@ -33,7 +33,7 @@ export default function ProdutosScreen() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://192.168.68.113:3333/products');
+      const response = await axios.get('http://192.168.3.5:3333/products');
       console.log('Produtos buscados:', response.data);
       setProducts(response.data.data);
     } catch (error) {
@@ -44,7 +44,7 @@ export default function ProdutosScreen() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://192.168.68.113:3333/categories');
+      const response = await axios.get('http://192.168.3.5:3333/categories');
       console.log('Categorias buscadas:', response.data);
       setCategories(response.data.data);
     } catch (error) {
@@ -63,17 +63,17 @@ export default function ProdutosScreen() {
       let response;
       if (currentProduct.id) {
         console.log('Editando produto:', currentProduct);
-        response = await axios.post(`http://192.168.68.113:3333/products/persist/${currentProduct.id}`, currentProduct);
+        response = await axios.post(`http://192.168.3.5:3333/products/persist/${currentProduct.id}`, currentProduct);
       } else {
         console.log('Criando produto:', currentProduct);
-        response = await axios.post('http://192.168.68.113:3333/products/persist', currentProduct);
+        response = await axios.post('http://192.168.3.5:3333/products/persist', currentProduct);
       }
 
       console.log('Resposta da API:', response.data);
       if (response.data.success) {
         Alert.alert('Sucesso', currentProduct.id ? 'Produto editado com sucesso.' : 'Produto criado com sucesso.');
       } else {
-        Alert.alert( response.data.message || 'Erro ao salvar produto. Por favor, tente novamente mais tarde.');
+        Alert.alert(response.data.message || 'Erro ao salvar produto. Por favor, tente novamente mais tarde.');
       }
 
       setDialogVisible(false);
@@ -98,12 +98,14 @@ export default function ProdutosScreen() {
           text: 'OK',
           onPress: async () => {
             try {
-              const response = await axios.post('http://192.168.68.113:3333/products/destroy', { id: product.id });
+              const response = await axios.post('http://192.168.3.5:3333/products/destroy', { id: product.id });
               if (response.data.success) {
                 Alert.alert('Sucesso', 'Produto excluído com sucesso.');
-                fetchProducts();
+                
+                // Atualiza imediatamente o estado local
+                setProducts((prevProducts) => prevProducts.filter(item => item.id !== product.id));
               } else {
-                Alert.alert( response.data.message || 'Erro ao excluir produto. Por favor, tente novamente mais tarde.');
+                Alert.alert(response.data.message || 'Erro ao excluir produto. Por favor, tente novamente mais tarde.');
               }
             } catch (error) {
               console.error('Erro ao excluir produto:', error);
@@ -115,6 +117,7 @@ export default function ProdutosScreen() {
       { cancelable: false }
     );
   };
+  
 
   const handleEdit = (product: Product) => {
     setCurrentProduct(product);
@@ -128,34 +131,29 @@ export default function ProdutosScreen() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <FlatList
           data={products}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleEdit(item)} style={styles.container}>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCell}>{item.name}</Text>
-                <Text style={styles.tableCell}>{item.price}</Text>
-                <Text style={styles.tableCell}>{item.description}</Text>
-                <View style={styles.tableCellActions}>
-                  <TouchableOpacity onPress={() => handleEdit(item)} style={styles.editButton}>
-                    <Text style={styles.editButtonText}>Editar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDelete(item)} style={styles.deleteButton}>
-                    <Text style={styles.deleteButtonText}>Excluir</Text>
-                  </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleEdit(item)} style={styles.cardContainer}>
+              <View style={styles.card}>
+                <Image source={{ uri: item.image }} style={styles.productImage} />
+                <View style={styles.cardContent}>
+                  <Text style={styles.productName}>{item.name}</Text>
+                  <Text style={styles.productPrice}>{item.price}</Text>
+                  <Text style={styles.productDescription}>{item.description}</Text>
+                  <View style={styles.cardActions}>
+                    <TouchableOpacity onPress={() => handleEdit(item)} style={styles.editButton}>
+                      <Text style={styles.editButtonText}>Editar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDelete(item)} style={styles.deleteButton}>
+                      <Text style={styles.deleteButtonText}>Excluir</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>
-          )}
-          ListHeaderComponent={() => (
-            <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderCell}>Nome</Text>
-              <Text style={styles.tableHeaderCell}>Preço</Text>
-              <Text style={styles.tableHeaderCell}>Descrição</Text>
-              <Text style={styles.tableHeaderCell}>Ações</Text>
-            </View>
           )}
         />
       </SafeAreaView>
@@ -218,73 +216,84 @@ export default function ProdutosScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#f5f5f5', 
+    backgroundColor: '#f5f5f5',
   },
-  tableHeader: {
+  cardContainer: {
+    marginBottom: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    elevation: 5,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 8,
-    backgroundColor: '#f8f8f8', 
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc', 
-  },
-  tableHeaderCell: {
-    flex: 1,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 16, 
-  },
-  tableRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    backgroundColor: '#fff', 
-    borderRadius: 8, 
-    marginBottom: 10, 
   },
-  tableCell: {
+  productImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 16,
+  },
+  cardContent: {
     flex: 1,
-    textAlign: 'center', 
-    fontSize: 14,
+    justifyContent: 'space-between',
   },
-  tableCellActions: {
+  productName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  productPrice: {
+    fontSize: 14,
+    color: '#4CAF50',
+  },
+  productDescription: {
+    fontSize: 12,
+    color: '#777',
+    marginVertical: 8,
+  },
+  cardActions: {
     flexDirection: 'row',
-    justifyContent: 'center', 
+    justifyContent: 'space-between',
   },
   editButton: {
-    marginRight: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
     backgroundColor: '#007BFF',
-    borderRadius: 4, 
+    borderRadius: 6,
+    padding: 8,
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  deleteButton: {
+    backgroundColor: '#F44336',
+    borderRadius: 6,
+    padding: 8,
+    flex: 1,
+    marginHorizontal: 4,
   },
   editButtonText: {
     color: '#fff',
+    textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 14,
-  },
-  deleteButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#F44336',
-    borderRadius: 4,
   },
   deleteButtonText: {
     color: '#fff',
+    textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 14,
   },
   addButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     backgroundColor: '#2196F3',
-    borderRadius: 20,
+    borderRadius: 30,
     alignItems: 'center',
     marginTop: 20,
+    elevation: 5,
   },
   addButtonText: {
     color: '#fff',
@@ -295,24 +304,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
     width: '80%',
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 12, 
-    shadowColor: '#000', 
+    borderRadius: 12,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5, 
+    elevation: 5,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: 'center', 
+    textAlign: 'center',
+    color: '#333',
   },
   input: {
     height: 50,
@@ -322,6 +332,7 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     marginBottom: 16,
     fontSize: 14,
+    backgroundColor: '#f9f9f9',
   },
   modalActions: {
     flexDirection: 'row',
@@ -329,12 +340,13 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     backgroundColor: '#F44336',
-    borderRadius: 4,
+    borderRadius: 8,
     flex: 1,
     alignItems: 'center',
     marginRight: 8,
+    elevation: 3,
   },
   cancelButtonText: {
     color: '#fff',
@@ -343,11 +355,12 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     backgroundColor: '#4CAF50',
-    borderRadius: 20,
+    borderRadius: 8,
     flex: 1,
     alignItems: 'center',
+    elevation: 3,
   },
   saveButtonText: {
     color: '#fff',

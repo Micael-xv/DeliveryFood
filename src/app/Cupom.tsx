@@ -21,7 +21,7 @@ export default function CupomScreen() {
 
   const fetchCupons = async () => {
     try {
-      const response = await axios.get('http://192.168.68.113:3333/cupoms');
+      const response = await axios.get('http://192.168.3.5:3333/cupoms');
       console.log('Cupons buscados:', response.data);
       setCupons(response.data.data); // Acessa o array de cupons dentro do objeto de resposta
     } catch (error) {
@@ -40,10 +40,10 @@ export default function CupomScreen() {
       let response;
       if (currentCupom.id) {
         console.log('Editando cupom:', currentCupom);
-        response = await axios.post(`http://192.168.68.113:3333/cupoms/persist/${currentCupom.id}`, currentCupom);
+        response = await axios.post(`http://192.168.3.5:3333/cupoms/persist/${currentCupom.id}`, currentCupom);
       } else {
         console.log('Criando cupom:', currentCupom);
-        response = await axios.post('http://192.168.68.113:3333/cupoms/persist', currentCupom);
+        response = await axios.post('http://192.168.3.5:3333/cupoms/persist', currentCupom);
       }
 
       console.log('Resposta da API:', response.data);
@@ -75,7 +75,7 @@ export default function CupomScreen() {
           text: 'OK',
           onPress: async () => {
             try {
-              const response = await axios.post('http://192.168.68.113:3333/cupoms/destroy', { id: cupom.id });
+              const response = await axios.post('http://192.168.3.5:3333/cupoms/destroy', { id: cupom.id });
               if (response.data.success) {
                 Alert.alert('Sucesso', 'Cupom excluído com sucesso.');
                 setCupons(cupons.filter(c => c.id !== cupom.id)); // Atualiza o estado dos cupons

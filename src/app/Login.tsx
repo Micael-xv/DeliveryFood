@@ -29,13 +29,13 @@ export default function LoginScreen() {
         
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
-          navigation.replace('Home');
+          navigation.navigate('index');
         }
       } else {
         Alert.alert('Erro', 'Email ou senha incorretos.');
       }
     } catch (error) {
-      console.error('Erro ao fazer login:', error.response ? error.response.data : error.message);
+      console.error('Erro ao fazer login:', (error as any).response ? (error as any).response.data : (error as any).message);
       Alert.alert('Erro', 'Ocorreu um erro ao tentar fazer login.');
     }
   };

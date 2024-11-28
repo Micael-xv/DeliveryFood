@@ -28,7 +28,7 @@ export default function CadastroScreen({navigation}: {navigation: any}) {
         password,
       });
 
-      const response = await axios.post('http://192.168.3.5:3333/users/register', {
+      const response = await axios.post('http://192.168.68.113:3333/users/register', {
         username,
         name,
         cpf,

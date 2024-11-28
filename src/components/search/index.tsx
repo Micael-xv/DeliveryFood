@@ -20,7 +20,7 @@ export function Search() {
     if (query.length > 2) {
       setLoading(true);
       axios
-        .get(`http://192.168.68.113:3333/products?name=${query}`)
+        .get(`http://192.168.38.192:3333/products?name=${query}`)
         .then(response => {
           setResults(response.data);
           setLoading(false);

@@ -20,7 +20,7 @@ export function TrendingFoods() {
 
   useEffect(() => {
     async function getFoods() {
-      const response = await axios.get("http://192.168.68.113:3333/products");
+      const response = await axios.get("http://192.168.38.192:3333/products");
       setFoods(response.data.data);
       setFilteredFoods(response.data.data);
     }
